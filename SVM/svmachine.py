@@ -10,11 +10,13 @@ class VirtualMachine:
     input_cache = ""
     output_cache = ""
     call_and_ret = []  # 函数调用栈
+    switched_var_value = None  # switch-case 语句中的变量值
+    is_in_switch = False  # 是否已经进入了 switch-case 语句
     return_code = -1  # 主函数/脚本退出代码
 
     parser = parser.Parser()
 
-    debug_mode = True
+    debug_mode = False
     def print_debug(self, _string):
         if self.debug_mode:
             print(_string)
@@ -37,7 +39,9 @@ class VirtualMachine:
         current_operator = None  # 当前的运算符
 
         for token in expr:
-            if token.startswith('"') and token.endswith('"'):  # 处理字符串常量
+            if isinstance(token, (int, float)):  # 处理数字常量
+                value = token
+            elif token.startswith('"') and token.endswith('"'):  # 处理字符串常量
                 value = token[1:-1]  # 去掉首尾的引号
             elif self.parser.is_variable(token):  # 处理变量
                 var_value = self.memory.heap.load(self.symbol_table.get(token).value)
@@ -69,6 +73,33 @@ class VirtualMachine:
 
         return result
 
+    def get_condition_value(self, condition):
+        value_left = self.memory.heap.load(self.symbol_table.get(condition[0]).value)
+        _right = condition[2]
+        if self.parser.is_variable(_right):
+            value_right = self.memory.heap.load(self.symbol_table.get(_right).value)
+        elif isinstance(_right, (int, float)):
+            value_right = _right
+        elif _right.startswith('"') and _right.endswith('"'):
+            value_right = _right[1:-1]
+        else:
+            raise ValueError(f"Invalid token: {_right}")
+
+        if condition[1] == '<':
+            return value_left < value_right
+        elif condition[1] == '>':
+            return value_left > value_right
+        elif condition[1] == '<=':
+            return value_left <= value_right
+        elif condition[1] == '>=':
+            return value_left >= value_right
+        elif condition[1] == '==':
+            return value_left == value_right
+        elif condition[1] == '!=':
+            return value_left != value_right
+        else:
+            return False
+
     def run(self, code):
         code_lines = code.split("\n")  # 按行分割代码
         self.memory.code = memory.CodeSegment(code_lines)
@@ -84,7 +115,7 @@ class VirtualMachine:
 
             if len(result) == 0:
                 i += 1
-                continue
+                continue # 跳过注释造成的空行
 
             # 实际根据代码内容，判断执行下一条或跳转到指定行
             if result[0] == 'string' or result[0] == 'int' or result[0] == 'float' or result[0] == 'var':  # 变量声明
@@ -163,11 +194,75 @@ class VirtualMachine:
                 self.call_and_ret.append(i)
                 i = self.symbol_table.get(func_name).value + 1
             elif result[0] == 'if':  # 条件判断
-                i += 1
-                pass
+                if_condition = result[1]
+                if self.get_condition_value(if_condition):
+                    i += 1
+                else:
+                    while i < len(code_lines):
+                        i += 1
+                        if code_lines[i].strip() == "endIf":
+                            i += 1
+                            break
             elif result[0] == 'switch':  # switch-case
+                switch_var_name = result[1]
+                try:
+                    self.switched_var_value = self.memory.heap.load(self.symbol_table.get(switch_var_name).value)
+                except AttributeError:
+                    self.throw_error(f"Variable {switch_var_name} not declared")
+                    break
                 i += 1
-                pass
+            elif result[0] == 'case':  # case
+                if self.switched_var_value is None:
+                    self.throw_error("Switch variable not initialized")
+                    break
+
+                if self.is_in_switch:
+                    while i < len(code_lines):
+                        i += 1
+                        if code_lines[i].strip() == "endSwitch":
+                            break
+                    continue
+
+                this_case = result[1]
+                if isinstance(this_case, (int, float)):
+                    case_value = this_case
+                else:
+                    case_value = this_case[1:-1]
+
+                if type(self.switched_var_value) != type(case_value):
+                    self.throw_error(f"Type mismatch between {type(self.switched_var_value)} and {type(case_value)}")
+                    break
+
+                if self.switched_var_value == case_value:
+                    self.is_in_switch = True
+                    i += 1
+                else:
+                    while i < len(code_lines):
+                        i += 1
+                        temp_line = code_lines[i]
+                        if not temp_line.strip():
+                            i += 1
+                            continue
+                        temp_result = self.parser.parse_code(temp_line.lstrip())
+                        if len(temp_result) != 0 and (temp_result[0] == 'case' or temp_result[0] == 'default'):
+                            break
+            elif result[0] == 'default':  # default
+                if self.switched_var_value is None:
+                    self.throw_error("Switch variable not initialized")
+                    break
+
+                if self.is_in_switch:
+                    while i < len(code_lines):
+                        i += 1
+                        if code_lines[i].strip() == "endSwitch":
+                            break
+                else:
+                    self.is_in_switch = True
+                    i += 1
+            elif result[0] == 'endSwitch':  # endSwitch
+                self.switched_var_value = None
+                self.is_in_switch = False
+                i += 1
             else:
                 if self.parser.try_parse_variable_assignment(line.lstrip()) is not None:
                     var_name = result[0]

@@ -32,7 +32,7 @@ class Parser:
 
     _variable_assignment = pp.Group(_variable + "=" + pp.Group(_expression))  # a = 2
 
-    _condition = _variable + pp.oneOf("< > <= >= == !=") + (_integer_constant ^ _real_constant ^ _variable ^ _string_constant)  # a >= 2
+    _condition = pp.Group(_variable + pp.oneOf("< > <= >= == !=") + (_integer_constant ^ _real_constant ^ _variable ^ _string_constant))  # a >= 2
     _if_start = pp.Group(pp.Keyword("if") + _condition + ":")  # if a >= 2:
     _if_end = pp.Group(pp.Keyword("endIf"))  # endIf
 

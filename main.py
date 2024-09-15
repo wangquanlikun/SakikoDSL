@@ -19,4 +19,5 @@ if __name__ == '__main__':
         with open(path, "r", encoding = "utf-8") as code:
             source_code += code.read() + "\n"
     dsl_parser = svmachine.VirtualMachine()
+    print("----loading virtual machine----")
     dsl_parser.run(source_code)
