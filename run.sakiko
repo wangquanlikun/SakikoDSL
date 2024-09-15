@@ -8,8 +8,7 @@ endFunc
 
 def login():
     print "请输入用户名登录在线客服系统"
-    //input username Timeout 20 timeout()
-    username = "张三"
+    input username Timeout 20 timeout()
 endFunc
 
 def speak():
@@ -19,8 +18,7 @@ def speak():
 
     print "输入“提示”可查看本客服支持的功能列表", "输入“结束”可结束本次服务"
     var choice
-    //input choice Timeout 20 timeout()
-    choice = "提示"
+    input choice Timeout 20 timeout()
 
     switch choice:
         case "提示":
