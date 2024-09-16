@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            width: 500px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: white;
+        }
+        #message-area {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        #input-area {
+            display: flex;
+            padding: 10px;
+        }
+        #input-area input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #input-area button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        #input-area button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="message-area"></div>
+    <div id="input-area">
+        <input type="text" id="message-input" placeholder="输入消息...">
+        <button id="send-button">发送</button>
+    </div>
+</div>
+
+<script>
+    const ws = new WebSocket('ws://localhost:10043');
+    const messageArea = document.getElementById('message-area');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+
+    // 接收消息并显示
+    ws.onmessage = function(event) {
+        const message = document.createElement('div');
+        message.className = 'message';
+        message.textContent = '客服小祥: ' + event.data;
+        messageArea.appendChild(message);
+        messageArea.scrollTop = messageArea.scrollHeight;  // 保持滚动条在底部
+    };
+
+    // 发送消息
+    sendButton.addEventListener('click', function() {
+        const messageText = messageInput.value;
+        if (messageText.trim()) {
+            ws.send(messageText);
+
+            // 将发送的消息显示在页面上
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.textContent = '我: ' + messageText;
+            messageArea.appendChild(message);
+            messageArea.scrollTop = messageArea.scrollHeight;  // 保持滚动条在底部
+
+            messageInput.value = '';  // 清空输入框
+        }
+    });
+
+    // 通过按下Enter键发送消息
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            sendButton.click();
+        }
+    });
+</script>
+
+</body>
+</html>

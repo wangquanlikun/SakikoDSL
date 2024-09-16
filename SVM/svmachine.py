@@ -1,5 +1,6 @@
 import time
 from time import sleep
+import asyncio
 
 from SakikoDSL.SVM import parser
 from SakikoDSL.SVM import memory
@@ -15,6 +16,10 @@ class VirtualMachine:
     return_code = -1  # 主函数/脚本退出代码
 
     parser = parser.Parser()
+
+    websocket = None
+    def set_websocket(self, _websocket):
+        self.websocket = _websocket
 
     debug_mode = False
     def print_debug(self, _string):
@@ -103,6 +108,10 @@ class VirtualMachine:
     def run(self, code):
         code_lines = code.split("\n")  # 按行分割代码
         self.memory.code = memory.CodeSegment(code_lines)
+
+        while self.websocket is None:
+            print("Waiting for connection...")
+            sleep(1)
 
         i = 0
         while i < len(code_lines):
@@ -276,7 +285,7 @@ class VirtualMachine:
                 i += 1
 
             if self.output_cache: # 不为空则输出
-                ui.UserInteraction.print(self.output_cache)
+                asyncio.run(ui.UserInteraction.print(self.output_cache, self.websocket))
                 self.output_cache = ""
 
         return self.return_code

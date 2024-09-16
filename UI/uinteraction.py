@@ -1,11 +1,11 @@
 class UserInteraction:
 
     @staticmethod
-    def print(_string):
-        mode = "command line"
+    async def print(_string, _socket = None):
+        mode = "socket server"
         if mode == "command line":
             print(_string)
-        elif mode == "GUI":
-            pass
+        elif mode == "socket server" and _socket:
+            await _socket.send(_string)
         else:
             pass

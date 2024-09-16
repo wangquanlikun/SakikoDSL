@@ -22,11 +22,7 @@ def speak():
 
     switch choice:
         case "提示":
-            print "本系统支持的功能有："
-            print "1. 查询订单"
-            print "2. 查询物流"
-            print "3. 退款"
-            print "4. 结束"
+            print "本系统支持的功能有：", "1. 查询订单", "2. 查询物流", "3. 退款", "4. 结束"
         case "结束":
             print "感谢您的使用，再见"
             Exit 0
