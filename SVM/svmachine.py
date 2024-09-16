@@ -279,7 +279,7 @@ class VirtualMachine:
                 ui.UserInteraction.print(self.output_cache)
                 self.output_cache = ""
 
-        print(f"脚本执行结束，退出代码为 {self.return_code}")
+        return self.return_code
 
     def out_input(self, _input):
         self.input_cache = _input

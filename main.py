@@ -1,6 +1,8 @@
 import json
 import threading
-
+import shutil
+import sys
+sys.path.append("..")
 
 from SakikoDSL.SVM import svmachine
 
@@ -38,11 +40,16 @@ if __name__ == '__main__':
         with open(path, "r", encoding = "utf-8") as code:
             source_code += code.read() + "\n"
     dsl_parser = svmachine.VirtualMachine()
-    print("----loading virtual machine----")
+    loading_text = "Loading virtual machine"
+    terminal_width = shutil.get_terminal_size().columns
+    padding = (terminal_width - len(loading_text)) // 2
+    print(f"{'-'*padding}{loading_text}{'-'*padding}")
     input_thread = threading.Thread(target=input_func, args=(dsl_parser,))
     input_thread.start()
-    dsl_parser.run(source_code)
-    print("----script execution completed, press enter to exit----")
+    return_code = dsl_parser.run(source_code)
+    exit_text = f"Script execution completed with code: {return_code}. Press enter to exit"
+    padding = (terminal_width - len(exit_text)) // 2
+    print(f"{'-'*padding}{exit_text}{'-'*padding}")
     global running
     input_running = False
     input_thread.join()
