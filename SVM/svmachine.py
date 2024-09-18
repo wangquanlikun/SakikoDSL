@@ -5,6 +5,7 @@ import asyncio
 from SakikoDSL.SVM import parser
 from SakikoDSL.SVM import memory
 from SakikoDSL.SVM import symbol
+from SakikoDSL.SVM import database as db
 from SakikoDSL.UI import uinteraction as ui
 
 class VirtualMachine:
@@ -21,7 +22,7 @@ class VirtualMachine:
     def set_websocket(self, _websocket):
         self.websocket = _websocket
 
-    debug_mode = False
+    debug_mode = True
     def print_debug(self, _string):
         if self.debug_mode:
             print(_string)
@@ -108,6 +109,8 @@ class VirtualMachine:
     def run(self, code):
         code_lines = code.split("\n")  # 按行分割代码
         self.memory.code = memory.CodeSegment(code_lines)
+
+        system_database = db.Database()
 
         while self.websocket is None:
             print("Waiting for connection...")
@@ -272,6 +275,47 @@ class VirtualMachine:
                 self.switched_var_value = None
                 self.is_in_switch = False
                 i += 1
+            elif result[0] == '__login__':  # 登录
+                while True:
+                    if self.input_cache:
+                        result = self.input_cache.split(':')  # 按照 : 分割用户名和密码
+                        login_try = result[0]
+                        username = result[1]
+                        password = result[2]
+                        self.input_cache = ""
+                        self.print_debug(f"Login try: {login_try}, username: {username}, password: {password}")
+
+                        is_login = False
+
+                        if login_try == "login":
+                            if system_database.password_match(username, password):
+                                is_login = True
+                                asyncio.run(ui.UserInteraction.print('LOGIN_OK', self.websocket))
+                            else:
+                                asyncio.run(ui.UserInteraction.print('LOGIN_ERROR', self.websocket))
+                        elif login_try == "register":
+                            if system_database.user_exist(username):
+                                asyncio.run(ui.UserInteraction.print('REGISTER_ERROR', self.websocket))
+                            else:
+                                system_database.add_user(username, password)
+                                asyncio.run(ui.UserInteraction.print('REGISTER_OK', self.websocket))
+
+                        sleep(1)
+
+                        if is_login:
+                            new_addr = self.set_new_var_addr()
+                            new_symbol = symbol.Symbol("user__name", 'v', new_addr)
+                            self.symbol_table.add(new_symbol)
+                            self.memory.heap.store(new_addr, username)
+
+                            new_addr = self.set_new_var_addr()
+                            new_symbol = symbol.Symbol("__balance__", 'v', new_addr)
+                            self.symbol_table.add(new_symbol)
+                            user_balance = system_database.get_balance(username)
+                            self.memory.heap.store(new_addr, user_balance)
+
+                            i += 1
+                            break
             else:
                 if self.parser.try_parse_variable_assignment(line.lstrip()) is not None:
                     var_name = result[0]
@@ -286,6 +330,7 @@ class VirtualMachine:
 
             if self.output_cache: # 不为空则输出
                 asyncio.run(ui.UserInteraction.print(self.output_cache, self.websocket))
+                sleep(0.5) # 等待输出
                 self.output_cache = ""
 
         return self.return_code

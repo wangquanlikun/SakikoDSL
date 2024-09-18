@@ -52,6 +52,7 @@ def input_func(svm):
             pass
 
 def load_config():
+    # 读取配置文件/返回源代码路径
     with open('config.json') as f:
         config = json.load(f)
     author = config["author"]
@@ -62,6 +63,7 @@ def load_config():
     return config["source"]
 
 if __name__ == '__main__':
+    # 加载DSL源代码
     source_code_paths = load_config()
     source_code = ""
     for path in source_code_paths:
@@ -74,20 +76,25 @@ if __name__ == '__main__':
     padding = (terminal_width - len(loading_text)) // 2
     print(f"{'-'*padding}{loading_text}{'-'*padding}")
 
+    # 单独的线程用于接收用户输入
     input_thread = threading.Thread(target=input_func, args=(dsl_parser,))
     input_thread.start()
 
+    # 在浏览器中打开前端界面
     file_path = os.path.abspath(r'UI/main.htm')
     print(file_path)
     chrome_path = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
     webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path))
     webbrowser.get('chrome').open(f"file:///{file_path}")
 
+    # 运行虚拟机/DSL解释器
     return_code = dsl_parser.run(source_code)
+    # 运行结束的返回值
     exit_text = f"Script execution completed with code: {return_code}. Press enter to exit"
     padding = (terminal_width - len(exit_text)) // 2
     print(f"{'-'*padding}{exit_text}{'-'*padding}")
 
+    # 关闭输入线程
     global running
     input_running = False
     input_thread.join()

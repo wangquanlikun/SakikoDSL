@@ -46,7 +46,9 @@ class Parser:
     _blank_line = pp.LineEnd()  # 空行
     _blank_char = pp.White()  # 空白字符
 
-    _grammar_line = _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
+    _login = pp.Group(pp.Keyword("__login__"))  # login
+
+    _grammar_line = _login ^ _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
 
     def parse_code(self, code):
         result = self._grammar_line.parseString(code)[0]

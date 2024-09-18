@@ -1,5 +1,3 @@
-var username
-
 def timeout():
     print "对不起，您的操作超时。本次服务将在5秒后结束"
     Timeout 5
@@ -7,13 +5,12 @@ def timeout():
 endFunc
 
 def login():
-    print "请输入用户名登录在线客服系统"
-    input username Timeout 20 timeout()
+    __login__
 endFunc
 
 def speak():
     var hello_word
-    hello_word = "你好" + username + ", 请问有什么可以帮您？"
+    hello_word = "你好" + user__name + ", 请问有什么可以帮您？"
     print hello_word
 
     print "输入“提示”可查看本客服支持的功能列表", "输入“结束”可结束本次服务"

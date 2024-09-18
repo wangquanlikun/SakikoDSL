@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Chat</title>
+    <title>Sakiko Chat</title>
     <style>
+        /* 登录容器样式 */
+        #login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        /* 登录区域样式 */
+        #login-area {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* 输入框样式 */
+        #login-area input[type="text"],
+        #login-area input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* 登录/注册按钮的容器 */
+        #login-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 登录和注册按钮样式 */
+        #login-buttons button {
+            width: 48%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #login-buttons button:hover {
+            background-color: #45a049;
+        }
+
+        /* 登录消息显示区域 */
+        #login-message {
+            margin-top: 10px;
+            color: red;
+            font-size: 14px;
+        }
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -60,53 +117,110 @@
 </head>
 <body>
 
-<div id="chat-container">
-    <div id="message-area"></div>
-    <div id="input-area">
-        <input type="text" id="message-input" placeholder="输入消息...">
-        <button id="send-button">发送</button>
+<!-- 登录页面 -->
+    <div id="login-container">
+        <div id="login-area">
+            <h2>登录</h2>
+            <input type="text" id="username-input" placeholder="输入账号...">
+            <input type="password" id="password-input" placeholder="输入密码...">
+            <div id="login-buttons">
+                <button id="login-button">登录</button>
+                <button id="register-button">注册</button>
+            </div>
+            <div id="login-message"></div>
+        </div>
     </div>
-</div>
 
-<script>
-    const ws = new WebSocket('ws://localhost:10043');
-    const messageArea = document.getElementById('message-area');
-    const messageInput = document.getElementById('message-input');
-    const sendButton = document.getElementById('send-button');
+    <!-- 聊天页面 -->
+    <div id="chat-container" style="display: none;">
+        <div id="message-area"></div>
+        <div id="input-area">
+            <input type="text" id="message-input" placeholder="输入消息...">
+            <button id="send-button">发送</button>
+        </div>
+    </div>
 
-    // 接收消息并显示
-    ws.onmessage = function(event) {
-        const message = document.createElement('div');
-        message.className = 'message';
-        message.textContent = '客服小祥: ' + event.data;
-        messageArea.appendChild(message);
-        messageArea.scrollTop = messageArea.scrollHeight;  // 保持滚动条在底部
-    };
+    <script>
+        const ws = new WebSocket('ws://localhost:10043');
+        const messageArea = document.getElementById('message-area');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
 
-    // 发送消息
-    sendButton.addEventListener('click', function() {
-        const messageText = messageInput.value;
-        if (messageText.trim()) {
-            ws.send(messageText);
+        const loginContainer = document.getElementById('login-container');
+        const chatContainer = document.getElementById('chat-container');
+        const usernameInput = document.getElementById('username-input');
+        const passwordInput = document.getElementById('password-input');
+        const loginButton = document.getElementById('login-button');
+        const registerButton = document.getElementById('register-button');
+        const loginMessage = document.getElementById('login-message');
 
-            // 将发送的消息显示在页面上
-            const message = document.createElement('div');
-            message.className = 'message';
-            message.textContent = '我: ' + messageText;
-            messageArea.appendChild(message);
-            messageArea.scrollTop = messageArea.scrollHeight;  // 保持滚动条在底部
+        // 显示登录反馈信息
+        ws.onmessage = function(event) {
+            const data = event.data;
 
-            messageInput.value = '';  // 清空输入框
-        }
-    });
+            // 处理服务器的登录/注册反馈
+            if (data === 'LOGIN_OK') {
+                loginContainer.style.display = 'none';
+                chatContainer.style.display = 'flex';
+            } else if (data === 'REGISTER_OK') {
+                loginMessage.textContent = '注册成功，请登录。';
+            } else if (data === 'LOGIN_ERROR') {
+                loginMessage.textContent = '登录失败，账号或密码错误。';
+            } else if (data === 'REGISTER_ERROR') {
+                loginMessage.textContent = '注册失败，账号已存在。';
+            } else {
+                // 处理聊天消息
+                const message = document.createElement('div');
+                message.className = 'message';
+                message.textContent = '客服小祥: ' + event.data;
+                messageArea.appendChild(message);
+                messageArea.scrollTop = messageArea.scrollHeight;
+            }
+        };
 
-    // 通过按下Enter键发送消息
-    messageInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            sendButton.click();
-        }
-    });
-</script>
+        // 发送登录请求
+        loginButton.addEventListener('click', function() {
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            if (username.trim() && password.trim()) {
+                ws.send(`login:${username}:${password}`);  // 纯文本格式传递登录信息
+            }
+        });
+
+        // 发送注册请求
+        registerButton.addEventListener('click', function() {
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            if (username.trim() && password.trim()) {
+                ws.send(`register:${username}:${password}`);  // 纯文本格式传递注册信息
+            }
+        });
+
+        // 发送聊天消息
+        sendButton.addEventListener('click', function() {
+            const messageText = messageInput.value;
+            if (messageText.trim()) {
+                ws.send(messageText);
+
+                const message = document.createElement('div');
+                message.className = 'message';
+                message.textContent = '我: ' + messageText;
+                messageArea.appendChild(message);
+                messageArea.scrollTop = messageArea.scrollHeight;
+
+                messageInput.value = '';  // 清空输入框
+            }
+        });
+
+        // 通过按下Enter键发送消息
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    </script>
 
 </body>
 </html>
