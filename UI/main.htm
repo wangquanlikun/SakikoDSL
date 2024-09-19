@@ -87,7 +87,28 @@
             border-bottom: 1px solid #ccc;
         }
         .message {
+            display: flex;
             margin: 10px 0;
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+            line-height: 1.4;
+        }
+        /* 用户消息在右侧 */
+        .message.user {
+            justify-content: flex-start;
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            margin-left: auto;
+            border-top-right-radius: 0;
+        }
+        /* 远程消息在左侧 */
+        .message.remote {
+            justify-content: flex-start;
+            background-color: #f1f0f0;
+            align-self: flex-start;
+            margin-right: auto;
+            border-top-left-radius: 0;
         }
         #input-area {
             display: flex;
@@ -171,8 +192,8 @@
             } else {
                 // 处理聊天消息
                 const message = document.createElement('div');
-                message.className = 'message';
-                message.textContent = '客服小祥: ' + event.data;
+                message.className = 'message remote';
+                message.textContent = event.data;
                 messageArea.appendChild(message);
                 messageArea.scrollTop = messageArea.scrollHeight;
             }
@@ -205,8 +226,8 @@
                 ws.send(messageText);
 
                 const message = document.createElement('div');
-                message.className = 'message';
-                message.textContent = '我: ' + messageText;
+                message.className = 'message user';
+                message.textContent = messageText;
                 messageArea.appendChild(message);
                 messageArea.scrollTop = messageArea.scrollHeight;
 
