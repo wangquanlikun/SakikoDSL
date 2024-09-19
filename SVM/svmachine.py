@@ -304,7 +304,7 @@ class VirtualMachine:
 
                         if is_login:
                             new_addr = self.set_new_var_addr()
-                            new_symbol = symbol.Symbol("user__name", 'v', new_addr)
+                            new_symbol = symbol.Symbol("__username__", 'v', new_addr)
                             self.symbol_table.add(new_symbol)
                             self.memory.heap.store(new_addr, username)
 

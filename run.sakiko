@@ -10,7 +10,7 @@ endFunc
 
 def speak():
     var hello_word
-    hello_word = "你好" + user__name + ", 请问有什么可以帮您？"
+    hello_word = "你好" + __username__ + ", 请问有什么可以帮您？"
     print hello_word
 
     print "输入“提示”可查看本客服支持的功能列表", "输入“结束”可结束本次服务"
@@ -23,6 +23,9 @@ def speak():
         case "结束":
             print "感谢您的使用，再见"
             Exit 0
+        case "余额":
+            print "您的余额为: "
+            print __balance__
         default:
             print "对不起，本系统暂不支持该功能"
     endSwitch

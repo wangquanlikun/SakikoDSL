@@ -8,7 +8,7 @@ class Parser:
 
     _note = pp.Group(pp.Regex("//.*").suppress())  # // 注释内容
 
-    _variable = pp.Word(pp.alphas, pp.alphanums + "_")  # a
+    _variable = pp.Word("_" + pp.alphas, pp.alphanums + "_")  # a _a
     _variable_decl = pp.Group((pp.Keyword("string") ^ pp.Keyword("int") ^ pp.Keyword("float") ^ pp.Keyword("var")) + pp.delimited_list(_variable))  # int a, b, c
 
     _string = pp.Group(pp.delimited_list(_string_constant ^ _variable, "+"))  # "a" + "b" + str
