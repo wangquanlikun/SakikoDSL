@@ -34,4 +34,13 @@ endFunc
 def main():
     call login()
     call speak()
+    To re_score:
+    print "本次服务结束。请你为本次服务的客服小祥进行评价："
+    var score
+    input score Timeout 10 timeout()
+    if score <= 4:
+        goto re_score
+        // 测试goto
+    endIf
+    print "感谢您的评价，再见"
 endFunc 0

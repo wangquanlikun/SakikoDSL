@@ -41,6 +41,9 @@ class Parser:
     _switch_default = pp.Group(pp.Keyword("default") + ":")  # default:
     _switch_end = pp.Group(pp.Keyword("endSwitch"))  # endSwitch
 
+    _goto_statement = pp.Group(pp.Keyword("goto") + _variable)  # goto a
+    _goto_to_place_statement = pp.Group(pp.Keyword("To") + _variable + ":")  # To a:
+
     _input_with_timeout_call = pp.Group(pp.Keyword("input") + _variable + _timeout_set + _function)  # input a Timeout 1000 timeout()
 
     _blank_line = pp.LineEnd()  # 空行
@@ -48,7 +51,7 @@ class Parser:
 
     _login = pp.Group(pp.Keyword("__login__"))  # login
 
-    _grammar_line = _login ^ _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
+    _grammar_line = _login ^ _goto_statement ^ _goto_to_place_statement ^ _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
 
     def parse_code(self, code):
         result = self._grammar_line.parseString(code)[0]

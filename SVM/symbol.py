@@ -10,6 +10,9 @@ class Symbol:
     def is_func(self):
         return self.symbol_type == 'f' # 变量 value储存函数实现所在的行数
 
+    def is_goto_label(self):
+        return self.symbol_type == 'l' # 变量 value储存goto的目标行数
+
     def is_var(self):
         return self.symbol_type == 'v' # 变量 value储存地址
 

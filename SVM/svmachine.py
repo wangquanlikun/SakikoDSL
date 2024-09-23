@@ -84,8 +84,12 @@ class VirtualMachine:
         _right = condition[2]
         if self.parser.is_variable(_right):
             value_right = self.memory.heap.load(self.symbol_table.get(_right).value)
-        elif isinstance(_right, (int, float)):
+        elif isinstance(_right, int):
             value_right = _right
+            value_left = int(value_left)
+        elif isinstance(_right, float):
+            value_right = _right
+            value_left = float(value_left)
         elif _right.startswith('"') and _right.endswith('"'):
             value_right = _right[1:-1]
         else:
@@ -275,6 +279,14 @@ class VirtualMachine:
                 self.switched_var_value = None
                 self.is_in_switch = False
                 i += 1
+            elif result[0] == 'To':  # 跳转地点
+                goto_label = result[1]
+                new_symbol = symbol.Symbol(goto_label, 'l', i)
+                self.symbol_table.add(new_symbol)
+                i += 1
+            elif result[0] == 'goto':  # 跳转
+                goto_label = result[1]
+                i = self.symbol_table.get(goto_label).value + 1
             elif result[0] == '__login__':  # 登录
                 while True:
                     if self.input_cache:
