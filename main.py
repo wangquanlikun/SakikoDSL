@@ -95,6 +95,5 @@ if __name__ == '__main__':
     print(f"{'-'*padding}{exit_text}{'-'*padding}")
 
     # 关闭输入线程
-    global running
     input_running = False
     input_thread.join()

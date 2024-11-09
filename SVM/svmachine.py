@@ -219,6 +219,18 @@ class VirtualMachine:
                         if code_lines[i].strip() == "endIf":
                             i += 1
                             break
+            elif result[0] == 'ifLike':  # 模糊匹配
+                var_name = result[2]
+                str_to_match = result[4][1:-1]
+                var_value = self.memory.heap.load(self.symbol_table.get(var_name).value)
+                if var_value.find(str_to_match) != -1: # var_value 包含 str_to_match
+                    i += 1
+                else:
+                    while i < len(code_lines):
+                        i += 1
+                        if code_lines[i].strip() == "endIf":
+                            i += 1
+                            break
             elif result[0] == 'switch':  # switch-case
                 switch_var_name = result[1]
                 try:
