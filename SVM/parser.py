@@ -35,7 +35,7 @@ class Parser:
     _condition = pp.Group(_variable + pp.oneOf("< > <= >= == !=") + (_integer_constant ^ _real_constant ^ _variable ^ _string_constant))  # a >= 2
     _if_start = pp.Group(pp.Keyword("if") + _condition + ":")  # if a >= 2:
     _if_end = pp.Group(pp.Keyword("endIf"))  # endIf
-    _if_str_match = pp.Group(pp.Keyword("ifLike") + "(" + _variable + "," + _string_constant + ")")  # ifLike(a, "b") # 模糊匹配
+    _if_str_match = pp.Group(pp.Keyword("ifLike") + "(" + _variable + "," + _string_constant + ")" + ":")  # ifLike(a, "b"): # 模糊匹配
 
     _switch_start = pp.Group(pp.Keyword("switch") + _variable + ":")  # switch a:
     _switch_case = pp.Group(pp.Keyword("case") + (_integer_constant ^ _string_constant ^ _real_constant) + ":")  # case 1:
@@ -50,7 +50,7 @@ class Parser:
     _blank_line = pp.LineEnd()  # 空行
     _blank_char = pp.White()  # 空白字符
 
-    _login = pp.Group(pp.Keyword("__login__"))  # login
+    _login = pp.Group(pp.Keyword("__login__") + "(" + ")") # __login__()
 
     _grammar_line = _login ^ _goto_statement ^ _goto_to_place_statement ^ _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_str_match ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
 

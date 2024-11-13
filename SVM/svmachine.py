@@ -86,28 +86,37 @@ class VirtualMachine:
             value_right = self.memory.heap.load(self.symbol_table.get(_right).value)
         elif isinstance(_right, int):
             value_right = _right
-            value_left = int(value_left)
+            try:
+                value_left = int(value_left)
+            except ValueError:
+                return False
         elif isinstance(_right, float):
             value_right = _right
-            value_left = float(value_left)
+            try:
+                value_left = float(value_left)
+            except ValueError:
+                return False
         elif _right.startswith('"') and _right.endswith('"'):
             value_right = _right[1:-1]
         else:
             raise ValueError(f"Invalid token: {_right}")
 
-        if condition[1] == '<':
-            return value_left < value_right
-        elif condition[1] == '>':
-            return value_left > value_right
-        elif condition[1] == '<=':
-            return value_left <= value_right
-        elif condition[1] == '>=':
-            return value_left >= value_right
-        elif condition[1] == '==':
-            return value_left == value_right
-        elif condition[1] == '!=':
-            return value_left != value_right
-        else:
+        try:
+            if condition[1] == '<':
+                return value_left < value_right
+            elif condition[1] == '>':
+                return value_left > value_right
+            elif condition[1] == '<=':
+                return value_left <= value_right
+            elif condition[1] == '>=':
+                return value_left >= value_right
+            elif condition[1] == '==':
+                return value_left == value_right
+            elif condition[1] == '!=':
+                return value_left != value_right
+            else:
+                return False
+        except TypeError:
             return False
 
     def run(self, code):

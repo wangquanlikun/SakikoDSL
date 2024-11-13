@@ -5,7 +5,7 @@ def timeout():
 endFunc
 
 def login():
-    __login__
+    __login__()
 endFunc
 
 def speak():
@@ -27,14 +27,14 @@ def speak():
             print "您的余额为: "
             print __balance__
         default:
-            ifLike(choice, "提示")
+            ifLike(choice, "提示"):
                 print "本系统支持的功能有：", "1. 查询订单", "2. 查询物流", "3. 退款", "4. 结束"
             endIf
-            ifLike(choice, "余额")
+            ifLike(choice, "余额"):
                 print "您的余额为: "
                 print __balance__
             endIf
-            ifLike(choice, "结束")
+            ifLike(choice, "结束"):
                 print "感谢您的使用，再见"
                 Exit 0
             endIf
