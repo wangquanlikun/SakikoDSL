@@ -1,0 +1,10 @@
+// 基础函数 全局变量 声明
+def timeout():
+    print "对不起，您的操作超时。本次服务将在5秒后结束"
+    Timeout 5
+        Exit 0
+endFunc
+
+def login():
+    __login__()
+endFunc

@@ -1,0 +1,54 @@
+// 线上购物网站客服机器人
+def shopRobot():
+    var choiceShop
+    var matchShop
+    print "欢迎光临小店。我是在线客服小祥，很高兴为您服务。请问有什么可以帮您？"
+    To reSpeakShop:
+    input choiceShop Timeout 60 timeout()
+    matchShop = 0
+    ifLike(choiceShop, "提示"):
+        print "本系统支持的功能有：1. 查询订单 2. 查询物流 3. 客服咨询 4. 反馈建议 您可以直接输入有关关键词进行查询，或者输入“退出”结束本次服务"
+        goto reSpeakShop
+    endIf
+    ifLike(choiceShop, "订单"):
+        print "用户", __username__, "的订单信息如下：", __shopOrder__
+        Timeout 1
+        print "请问还有其他问题需要帮助吗？"
+        goto reSpeakShop
+    endIf
+    ifLike(choiceShop, "物流"):
+        print "用户", __username__, "的物流信息如下：", __shopLogistics__
+        Timeout 1
+        print "请问还有其他问题需要帮助吗？"
+        goto reSpeakShop
+    endIf
+    ifLike(choiceShop, "咨询"):
+        print "对不起，人工客服全忙。请可以输入您的问题，稍后会有客服人员回复您"
+        var questionShop
+        input questionShop Timeout 100 timeout()
+        print "感谢您的提问，我们会尽快回复您。请问还有其他问题需要帮助吗？"
+        goto reSpeakShop
+    endIf
+    ifLike(choiceShop, "反馈"):
+        print "请问您有什么建议或者意见？请在下方输入您的反馈"
+        var feedbackShop
+        input feedbackShop Timeout 100 timeout()
+        print "感谢您的反馈，我们会尽快处理。请问还有其他问题需要帮助吗？"
+        goto reSpeakShop
+    endIf
+    ifLike(choiceShop, "建议"):
+        print "请问您有什么建议或者意见？请在下方输入您的反馈"
+        var feedbackShop
+        input feedbackShop Timeout 100 timeout()
+        print "感谢您的反馈，我们会尽快处理。请问还有其他问题需要帮助吗？"
+        goto reSpeakShop
+    endIf
+    ifLike(choiceShop, "退出"):
+        print "感谢您的使用，再见"
+        matchShop = 1
+    endIf
+    if matchShop == 0:
+        print "对不起，我没有理解您的问题。请重新输入您的问题，或者输入“提示”查看支持的功能列表"
+        goto reSpeakShop
+    endIf
+endFunc

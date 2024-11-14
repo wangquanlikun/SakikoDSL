@@ -223,9 +223,17 @@ class VirtualMachine:
                 if self.get_condition_value(if_condition):
                     i += 1
                 else:
+                    end_if_match = 1
                     while i < len(code_lines):
                         i += 1
                         if code_lines[i].strip() == "endIf":
+                            end_if_match -= 1
+                        elif code_lines[i].strip().startswith("ifLike"):
+                            end_if_match += 1
+                        elif code_lines[i].strip().startswith("if"):
+                            end_if_match += 1
+
+                        if end_if_match == 0:
                             i += 1
                             break
             elif result[0] == 'ifLike':  # 模糊匹配
@@ -235,9 +243,17 @@ class VirtualMachine:
                 if var_value.find(str_to_match) != -1: # var_value 包含 str_to_match
                     i += 1
                 else:
+                    end_if_match = 1
                     while i < len(code_lines):
                         i += 1
                         if code_lines[i].strip() == "endIf":
+                            end_if_match -= 1
+                        elif code_lines[i].strip().startswith("if"):
+                            end_if_match += 1
+                        elif code_lines[i].strip().startswith("ifLike"):
+                            end_if_match += 1
+
+                        if end_if_match == 0:
                             i += 1
                             break
             elif result[0] == 'switch':  # switch-case

@@ -2,6 +2,10 @@
   "author": "https://github.com/wangquanlikun",
   "version": "0.2.0",
   "source": [
+    "./DSLScripts/func.sakiko",
+    "./DSLScripts/game.sakiko",
+    "./DSLScripts/telecom.sakiko",
+    "./DSLScripts/shopping.sakiko",
     "run.sakiko"
   ]
 }

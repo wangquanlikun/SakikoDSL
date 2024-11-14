@@ -13,6 +13,10 @@ A Domain Specific Language and its interpreter for customer service robots
 ![LOGIN](.Intro/login.png)
 客服对话界面  
 ![CHAT](.Intro/chat.png)
+本语法支持条件判断等功能
+![IF](.Intro/chat02.png)
+本客服机器人支持一定程度的模糊匹配，可以更好的理解用户的输入
+![LIKE](.Intro/chat03.png)
 
 ## DSL语法描述
 对于`SakikoDSL`语言，我们定义了如下的语法规则：  

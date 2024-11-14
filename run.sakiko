@@ -1,56 +1,53 @@
-def timeout():
-    print "对不起，您的操作超时。本次服务将在5秒后结束"
-    Timeout 5
-        Exit 0
-endFunc
-
-def login():
-    __login__()
-endFunc
-
-def speak():
-    var hello_word
-    hello_word = "你好" + __username__ + ", 请问有什么可以帮您？"
-    print hello_word
-
-    print "输入“提示”可查看本客服支持的功能列表", "输入“结束”可结束本次服务"
-    var choice
-    input choice Timeout 20 timeout()
-
-    switch choice:
-        case "提示":
-            print "本系统支持的功能有：", "1. 查询订单", "2. 查询物流", "3. 退款", "4. 结束"
-        case "结束":
-            print "感谢您的使用，再见"
-            Exit 0
-        case "余额":
-            print "您的余额为: "
-            print __balance__
-        default:
-            ifLike(choice, "提示"):
-                print "本系统支持的功能有：", "1. 查询订单", "2. 查询物流", "3. 退款", "4. 结束"
-            endIf
-            ifLike(choice, "余额"):
-                print "您的余额为: "
-                print __balance__
-            endIf
-            ifLike(choice, "结束"):
-                print "感谢您的使用，再见"
-                Exit 0
-            endIf
-    endSwitch
-endFunc
-
+// 主程序入口
 def main():
     call login()
-    call speak()
-    To re_score:
-    print "本次服务结束。请你为本次服务的客服小祥进行评价："
-    var score
-    input score Timeout 10 timeout()
-    if score <= 4:
-        goto re_score
-        // 测试goto
+    print "用户", __username__, "您好！欢迎使用Sakiko在线客服机器人。请问您需要什么服务？"
+    var choice
+    var match
+    To reSpeak:
+    input choice Timeout 60 timeout()
+    match = 0
+    ifLike(choice, "提示"):
+        print "本系统支持旗下电商平台，电信运营商平台，银行金融平台，在线游戏平台等多个行业的客服服务。您可以直接输入有关关键词进行查询，或者输入“退出”结束本次服务"
+        goto reSpeak
     endIf
-    print "感谢您的评价，再见"
+    ifLike(choice, "电商"):
+        call shopRobot()
+        print "电子商务平台客服服务结束。请问还有其他问题需要帮助吗？"
+        goto reSpeak
+    endIf
+    ifLike(choice, "电信"):
+        call telecomRobot()
+        print "电信运营商平台客服服务结束。请问还有其他问题需要帮助吗？"
+        goto reSpeak
+    endIf
+    ifLike(choice, "银行"):
+        call bankRobot()
+        print "银行金融平台客服服务结束。请问还有其他问题需要帮助吗？"
+        goto reSpeak
+    endIf
+    ifLike(choice, "游戏"):
+        call gameRobot()
+        print "在线游戏平台客服服务结束。请问还有其他问题需要帮助吗？"
+        goto reSpeak
+    endIf
+    ifLike(choice, "退出"):
+        print "感谢您的使用，再见。您可以选择为本次服务评分，或者输入“退出”结束本次服务"
+        var score
+        To reScore:
+        input score Timeout 60 timeout()
+        ifLike(score, "退出"):
+            Exit 0
+        endIf
+        if score < 0:
+            print "对不起，评分不能为负数。请重新输入您的评分"
+            goto reScore
+        endIf
+        print "感谢您的评分，再见"
+        match = 1
+    endIf
+    if match == 0:
+        print "对不起，我没有理解您的问题。请重新输入您的问题，或者输入“提示”查看支持的功能列表"
+        goto reSpeak
+    endIf
 endFunc 0
