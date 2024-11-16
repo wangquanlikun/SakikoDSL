@@ -15,7 +15,7 @@ A Domain Specific Language and its interpreter for customer service robots
 ![CHAT](.Intro/chat.png)
 本语法支持条件判断等功能
 ![IF](.Intro/chat02.png)
-本客服机器人支持一定程度的模糊匹配，可以更好的理解用户的输入
+本客服机器人支持一定程度的模糊匹配，可以更好地理解用户的输入
 ![LIKE](.Intro/chat03.png)
 
 ## DSL语法描述
@@ -48,3 +48,5 @@ A Domain Specific Language and its interpreter for customer service robots
 同时，该DSL解释器还支持一些特殊的语句规则，便于该特定领域的使用：
 1. 以关键字`ifLike`开头，后跟括号内的两个参数，第一个参数为字符变量，第二个参数为字符常量，表示字符串的模糊匹配。将其视作一个`if`判断语句。例如，`ifLike(a, "b"):`
 2. 关键字`__login__`，表示执行一系列用户登录操作。将其视作一个特殊的函数调用语句
+3. 以关键字`findData`命名的函数，表示在数据库中查询有关数据并对变量赋值。将其视作一个特殊的函数定义语句。例如，`findData(a, "b")`，其中`a`为存储返回值的变量，`"b"`为查询的关键字
+4. 以关键字`saveData`命名的函数，表示在数据库中根据变量数值存储有关数据。将其视作一个特殊的函数定义语句。例如，`saveData(a, "b")`，其中`a`为存储的数值，`"b"`为存储的关键字

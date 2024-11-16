@@ -1,4 +1,6 @@
 // 线上购物网站客服机器人
+var __shopOrder__
+var __shopLogistics__
 def shopRobot():
     var choiceShop
     var matchShop
@@ -11,12 +13,14 @@ def shopRobot():
         goto reSpeakShop
     endIf
     ifLike(choiceShop, "订单"):
+        findData(__shopOrder__, "shopOrder")
         print "用户", __username__, "的订单信息如下：", __shopOrder__
         Timeout 1
         print "请问还有其他问题需要帮助吗？"
         goto reSpeakShop
     endIf
     ifLike(choiceShop, "物流"):
+        findData(__shopLogistics__, "shopLogistics")
         print "用户", __username__, "的物流信息如下：", __shopLogistics__
         Timeout 1
         print "请问还有其他问题需要帮助吗？"

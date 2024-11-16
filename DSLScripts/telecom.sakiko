@@ -1,0 +1,4 @@
+def telecomRobot():
+    print "电信运营商平台客服服务现在离线，给您带来不便敬请谅解。"
+    Timeout 1
+endFunc

@@ -52,7 +52,12 @@ class Parser:
 
     _login = pp.Group(pp.Keyword("__login__") + "(" + ")") # __login__()
 
-    _grammar_line = _login ^ _goto_statement ^ _goto_to_place_statement ^ _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_str_match ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
+    _find_db_data = pp.Group(pp.Keyword("findData") + "(" + _variable + "," + _string_constant + ")") # findData(a, "b")
+    # a 记录返回数据，b 代表查询内容
+    _save_db_data = pp.Group(pp.Keyword("saveData") + "(" + _variable + "," + _string_constant + ")") # saveData(a, "b")
+    _update_balance = pp.Group(pp.Keyword("updateBalance") + "(" + _variable + ")") # updateBalance(a)
+
+    _grammar_line = _login ^ _find_db_data ^ _save_db_data ^ _update_balance ^ _goto_statement ^ _goto_to_place_statement ^ _variable_decl ^ _variable_assignment ^ _input_statement ^ _print_statement ^ _timeout_set ^ _exit_statement ^ _function_start ^ _function_end ^ _if_start ^ _if_str_match ^ _if_end ^ _switch_start ^ _switch_case ^ _switch_default ^ _switch_end ^ _input_with_timeout_call ^ _note ^ _function_call
 
     def parse_code(self, code):
         result = self._grammar_line.parseString(code)[0]
@@ -66,3 +71,22 @@ class Parser:
 
     def is_variable(self, code):
         return self._variable.matches(code)
+
+    def parse_expression(self, code):
+        return self._expression.parseString(code)
+
+# 解释器模块 测试桩
+if __name__ == "__main__":
+    parser = Parser()
+    while True:
+        test_code = input("请输入代码：")
+        if test_code != "exit":
+            try:
+                test_result = parser.parse_code(test_code)
+                print(test_result)
+            except pp.ParseException as e:
+                print("解析失败：", e)
+        else:
+            break
+
+    # 用于单独测试，手动模拟输入的原始代码，输出解析后的结果

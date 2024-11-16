@@ -1,0 +1,59 @@
+var __gameAccount__
+var __fesInfo__
+var __gameBalance__
+def gameRobot():
+    var choiceGame
+    var matchGame
+    print "欢迎访问 Azure Archive 游戏客服平台。我是在线客服ARONA，很高兴为您服务。请问有什么可以帮您？"
+    To reSpeakGame:
+    input choiceGame Timeout 60 timeout()
+    matchGame = 0
+    ifLike(choiceGame, "提示"):
+        print "本系统支持的功能有：1. 查询游戏账号 2. 查询活动信息 3. 客服咨询 4. 账户充值 您可以直接输入有关关键词进行查询，或者输入“退出”结束本次服务"
+        goto reSpeakGame
+    endIf
+    ifLike(choiceGame, "账号"):
+        findData(__gameAccount__, "gameAccount")
+        print "用户", __username__, "的游戏账号信息如下：", __gameAccount__
+        Timeout 1
+        print "请问还有其他问题需要帮助吗？"
+        goto reSpeakGame
+    endIf
+    ifLike(choiceGame, "活动"):
+        findData(__fesInfo__, "fesInfo")
+        print "游戏 Azure Archive 现在的活动信息如下：", __fesInfo__
+        Timeout 1
+        print "请问还有其他问题需要帮助吗？"
+        goto reSpeakGame
+    endIf
+    ifLike(choiceGame, "咨询"):
+        print "对不起，人工客服全忙。请可以输入您的问题，稍后会有客服人员回复您"
+        var questionGame
+        input questionGame Timeout 100 timeout()
+        print "感谢您的提问，我们会尽快回复您。请问还有其他问题需要帮助吗？"
+        goto reSpeakGame
+    endIf
+    ifLike(choiceGame, "充值"):
+        findData(__gameBalance__, "gameBalance")
+        print "用户", __username__, "的当前账户余额为：", __gameBalance__, "元。您可以直接在下方输入想要充值的金额"
+        To reInputRecharge:
+        var rechargeGame
+        input rechargeGame Timeout 60 timeout()
+        if rechargeGame > 0:
+            updateBalance(rechargeGame)
+            findData(__gameBalance__, "gameBalance")
+            print "充值成功，您的账户余额为：", __gameBalance__, "元。请问还有其他问题需要帮助吗？"
+            goto reSpeakGame
+        endIf
+        print "对不起，您的充值金额不合法。请重新输入您的充值金额"
+        goto reInputRecharge
+    endIf
+    ifLike(choiceGame, "退出"):
+        print "感谢您的使用，再见"
+        matchGame = 1
+    endIf
+    if matchGame == 0:
+        print "对不起，我没有理解您的问题。请重新输入您的问题，或者输入“提示”查看支持的功能列表"
+        goto reSpeakGame
+    endIf
+endFunc

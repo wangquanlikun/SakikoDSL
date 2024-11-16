@@ -324,6 +324,42 @@ class VirtualMachine:
             elif result[0] == 'goto':  # 跳转
                 goto_label = result[1]
                 i = self.symbol_table.get(goto_label).value + 1
+            elif result[0] == 'findData':  # 查询数据库
+                store_var_name = result[2]
+                query_content = result[4][1:-1]
+                var_addr = self.symbol_table.get(store_var_name).value
+                username = self.memory.heap.load(self.symbol_table.get("__username__").value)
+                if query_content == "gameBalance":
+                    user_balance = system_database.get_balance(username)
+                    self.memory.heap.store(var_addr, user_balance)
+                elif query_content == "shopOrder":
+                    shop_order = system_database.get_order_info(username)
+                    self.memory.heap.store(var_addr, shop_order)
+                elif query_content == "shopLogistics":
+                    shop_logistics = system_database.get_logistics_info(username)
+                    self.memory.heap.store(var_addr, shop_logistics)
+                elif query_content == "gameAccount":
+                    game_account = system_database.get_game_info(username)
+                    self.memory.heap.store(var_addr, game_account)
+                elif query_content == "fesInfo":
+                    fes_info = db.Database.get_game_fes_info()
+                    self.memory.heap.store(var_addr, fes_info)
+                i += 1
+            elif result[0] == 'saveData':  # 保存数据到数据库
+                save_var_name = result[2]
+                save_content = result[4][1:-1]
+                var_val = self.memory.heap.load(self.symbol_table.get(save_var_name).value)
+                username = self.memory.heap.load(self.symbol_table.get("__username__").value)
+                if save_content == "balance":
+                    system_database.update_balance(username, var_val)
+                i += 1
+            elif result[0] == 'updateBalance':  # 更新余额
+                balance_var_name = result[2]
+                balance_var_addr = self.symbol_table.get(balance_var_name).value
+                balance = self.memory.heap.load(balance_var_addr)
+                username = self.memory.heap.load(self.symbol_table.get("__username__").value)
+                system_database.update_balance(username, balance)
+                i += 1
             elif result[0] == '__login__':  # 登录
                 while True:
                     if self.input_cache:
@@ -357,12 +393,6 @@ class VirtualMachine:
                             self.symbol_table.add(new_symbol)
                             self.memory.heap.store(new_addr, username)
 
-                            new_addr = self.set_new_var_addr()
-                            new_symbol = symbol.Symbol("__balance__", 'v', new_addr)
-                            self.symbol_table.add(new_symbol)
-                            user_balance = system_database.get_balance(username)
-                            self.memory.heap.store(new_addr, user_balance)
-
                             i += 1
                             break
             else:
@@ -382,7 +412,22 @@ class VirtualMachine:
                 sleep(0.5) # 等待输出
                 self.output_cache = ""
 
+        system_database.close()
         return self.return_code
 
     def out_input(self, _input):
         self.input_cache = _input
+
+# 虚拟机测试桩 -- 表达式求值
+if __name__ == "__main__":
+    vm = VirtualMachine()
+    parser = parser.Parser()
+    testsource = input()
+    try:
+        text_expr = parser.parse_expression(testsource)
+    except Exception as e:
+        print("Parse error:", e)
+        exit(1)
+    print("Expression:", text_expr)
+    p_result = vm.get_expression_value(text_expr)
+    print("Result:", p_result)

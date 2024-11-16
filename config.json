@@ -5,6 +5,7 @@
     "./DSLScripts/func.sakiko",
     "./DSLScripts/game.sakiko",
     "./DSLScripts/telecom.sakiko",
+    "./DSLScripts/bank.sakiko",
     "./DSLScripts/shopping.sakiko",
     "run.sakiko"
   ]
