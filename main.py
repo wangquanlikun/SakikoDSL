@@ -62,7 +62,7 @@ def load_config():
     print("Welcome to the customer service robot Staff S(Sakiko)!")
     return config["source"]
 
-if __name__ == '__main__':
+def main(test_info):
     # 加载DSL源代码
     source_code_paths = load_config()
     source_code = ""
@@ -81,11 +81,12 @@ if __name__ == '__main__':
     input_thread.start()
 
     # 在浏览器中打开前端界面
-    file_path = os.path.abspath(r'UI/main.htm')
-    print(file_path)
-    chrome_path = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
-    webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path))
-    webbrowser.get('chrome').open(f"file:///{file_path}")
+    if not test_info:
+        file_path = os.path.abspath(r'UI/main.htm')
+        print(file_path)
+        chrome_path = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path))
+        webbrowser.get('chrome').open(f"file:///{file_path}")
 
     # 运行虚拟机/DSL解释器
     return_code = dsl_parser.run(source_code)
@@ -95,5 +96,10 @@ if __name__ == '__main__':
     print(f"{'-'*padding}{exit_text}{'-'*padding}")
 
     # 关闭输入线程
+    global input_running
     input_running = False
     input_thread.join()
+
+if __name__ == "__main__":
+    auto_test_mode = False
+    main(auto_test_mode)
