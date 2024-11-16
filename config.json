@@ -1,6 +1,6 @@
 {
   "author": "https://github.com/wangquanlikun",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "source": [
     "./DSLScripts/func.sakiko",
     "./DSLScripts/game.sakiko",

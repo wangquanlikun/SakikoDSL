@@ -13,6 +13,8 @@ class Database:
             '''CREATE TABLE IF NOT EXISTS shop (
                                 username TEXT,
                                 order_item TEXT,
+                                order_num INTEGER DEFAULT 1,
+                                Logistics_ID TEXT,
                                 Logistics_Info TEXT,
                                 FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE);''')
         self.cursor.execute(
@@ -53,18 +55,25 @@ class Database:
         self.conn.commit()
 
     def get_order_info(self, username):
-        self.cursor.execute("SELECT order_item FROM shop WHERE username = ?", (username,))
-        return self.cursor.fetchone()
+        self.cursor.execute("SELECT order_item, order_num FROM shop WHERE username = ?", (username,))
+        return self.cursor.fetchall()
 
     def get_logistics_info(self, username):
-        self.cursor.execute("SELECT Logistics_Info FROM shop WHERE username = ?", (username,))
-        return self.cursor.fetchone()
+        self.cursor.execute("SELECT Logistics_ID, order_item, Logistics_Info FROM shop WHERE username = ?", (username,))
+        return self.cursor.fetchall()
 
     def get_game_info(self, username):
+        info_str = ""
         self.cursor.execute("SELECT game_level FROM game WHERE username = ?", (username,))
-        info_str = self.cursor.fetchone()
+        info = self.cursor.fetchone()
+        if info:
+            info_str = f"账户等级：{info[0]} "
         self.cursor.execute("SELECT game_item FROM game_own WHERE username = ?", (username,))
-        info_str += self.cursor.fetchone()
+        game_item = self.cursor.fetchall()
+        if game_item:
+            info_str += "拥有的角色有："
+            for item in game_item:
+                info_str += item[0] + " "
         return info_str
 
     @staticmethod
