@@ -16,13 +16,13 @@ async def send_messages(file_path, server_url):
                     if message:  # 忽略空行
                         await websocket.send(message)
                         print(f"Sent: {message}")
-                    await asyncio.sleep(5)
+                    await asyncio.sleep(4)
     except Exception as e:
         print(f"Error: {e}")
 
 # 主函数
 def main():
-    file_path = "./testScripts/test01.txt"  # 测试脚本输入文件路径
+    file_path = "./testScripts/test02.txt"  # 测试脚本输入文件路径
     server_url = "ws://localhost:10043"
     asyncio.run(send_messages(file_path, server_url))
 
